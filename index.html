@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./script.js" defer></script>
+</head>
+<body>
+  <div class="header">
+    <h1>Tic Tac Toe</h1>
+    <div class="player-names"></div>
+    <button class="start-button">Start</button>
+    <div class="form">
+      <form action="" class="start-form">
+        <dialog class="form-modal">
+          <label for="player-one" class="player-one-label"></label>
+          <input type="text" id="player-one" placeholder="Player 1 Name">
+          <input type="text" id="player-two" placeholder="Player 2 Name">
+          <select name="players" id="players">
+            <option value="Player">Player 1 vs player 2</option>
+            <option value="Player">Player 1 vs AI</option>
+          </select>
+          <button type="submit" class="submit-button">Start Game</button>
+        </dialog>
+      </form>
+    </div>
+  </div>
+  <dialog class="modal">
+    <div class="modal-player"></div>
+    <div class="modal-p"></div>
+      <button class="reset">Reset</button>
+    </dialog>
+    <div class="container">
+      <div class="grid-item one"></div>
+      <div class="grid-item two"></div>
+    <div class="grid-item three"></div>
+    <div class="grid-item four" id="4"></div>
+    <div class="grid-item five"></div>
+    <div class="grid-item six"></div>
+    <div class="grid-item seven"></div>
+    <div class="grid-item eight"></div>
+    <div class="grid-item nine"></div>
+  </div>
+</body>
+</html>
