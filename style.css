@@ -14,28 +14,41 @@ body{
   position: fixed;
   height: 100%;
   width: 100%;
-  align-content: center;
 }
 .header{
+  display: grid;
   text-align: center;
   justify-self: center;
   align-self: center;
+  gap: 15px;
+  font-size: clamp(10px, 1.5vw, 150px);
 }
+
+.score{
+  display: flex;
+  justify-content: space-between;
+  justify-self: center;
+  align-self:center;
+  padding-bottom: 180px;
+  font-size: clamp(10px, 2vw, 30px);
+  width: clamp(10px, 60vw, 500px);
+}
+
 .container {
   display: grid;
   grid-template-columns: repeat(3,minmax(80px,200px));
   grid-template-rows: repeat(3,minmax(100px,150px));
   justify-content: center;
+  justify-self: center;
   align-self: center;
+  width: 55%;
+  height: 55%;
 }
 
 .container .grid-item {
   border: 1px solid rgba(255, 255, 255, 0.8);
-  /* padding: 60px; */
-  font-size: 120px;
+  font-size: clamp(80px, 10vw, 100px);
   text-align: center;
-  height: 100%;
-  width: 100%;
 }
 
 .grid-item:nth-child(n - 3){
@@ -65,7 +78,7 @@ body{
 
 .form-modal button{
   border: white 1px solid;
-  padding:10px 20px;
+  padding:10px;
   font-size: 15px;
   margin-top: 30px;
   border-radius: 20px;
@@ -76,15 +89,16 @@ body{
 .form input{
   background-color: #fff;
   border-radius: 20px;
-  padding: 12px;
+  padding: 10px;
   color: rgb(0, 0, 0);
 }
 
 select{
   border-radius: 20px;
   text-align: center;
-  padding: 12px;
+  padding: clamp(5px, 0.7vw, 100px);
   padding-right: 20px;
+  font-size: clamp(10px, 1.5vw, 20px);
   appearance: none;
   -moz-appearance: none;
   -webkit-appearance: none;
@@ -93,32 +107,37 @@ select{
   background-repeat: no-repeat;
   background-position: right 0.5em top 50%, 0 0;
   background-size: 1.5em auto, 100%;
-  width: 250px;
+  width: clamp(150px, 20vw, 300px);
 }
 
 .modal{
   display: none;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 15px;
+  padding-bottom: 70px;
+  padding-left: 30px;
   border-radius: 20px;
   text-align: center;
   padding-top: 50px;
-  background-color: rgb(0, 0, 0);
+  background-color: rgb(0, 0, 0, 0.8);
+  /* background-color: transparent; */
   color: white;
   box-shadow: 0 0 2em rgb(0 0 0/ .2);
-  height: 300px;
-  width: 450px;
-  transition: width 2s, height 4s;
-  margin-top: 1.5vh;
+  height: clamp(250px, 30vh, 600px);
+  width: clamp(250px, 80vw, 600px);
+  /* transition: width 2s, height 4s; */
+  /* border: none; */
+  /* margin-top: 1.5vh; */
 }
 
 .modal-player{
-  font-size: 60px;
+  font-size: clamp(30px, 3.5vw, 150px);
   background-color: inherit;
 }
 .modal-p{
-  font-size: 30px;
+  font-size: clamp(20px, 3vw, 100px);
   margin-top: 20px;
   background-color: inherit;
 }
@@ -140,5 +159,16 @@ select{
 .modal::backdrop{
   background:linear-gradient(45deg, red , blue);
   opacity: 0.3;
+  /* filter: blur(500px); */
+  /* /* text-shadow: 0 0 32px white; */
+  /* color: transparent; 
+  text-shadow: 0 0 8px rgb(249, 249, 249);  */
 }
 
+.blink {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {  
+  50% { opacity: 0; }
+}
