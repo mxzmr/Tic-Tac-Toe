@@ -1,7 +1,4 @@
 /* eslint-disable prefer-destructuring */
-// there is an issue with score() function its getting called many times
-
-
 const gameBoard = (() => {
   const gameBoard = [];
   const playerTurn = 'x';
@@ -52,7 +49,7 @@ const playersInfo = (() => {
     event.preventDefault();
     const player1 = playerOne.value;
     const player2 = playerTwo.value;
-    if (player1 && player2 && document.querySelector('.players').selectedIndex === 1) {
+    if (document.querySelector('.players').selectedIndex === 1) {
       document.querySelector('.players-names').textContent = `${player1} (X) vs ${player2} (O)`;
       document.querySelector('.score-player').textContent = `${player1} (X) : 0`;
       document.querySelector('.score-ai').textContent = `${player2} (O) : 0`;
@@ -82,15 +79,13 @@ const score = () => {
       }
     }
   })();
+  
   const game = (() => {
-    if (!playersInfo.playerOne.value) {
+    if (!playersInfo.playerOne.value && document.querySelector('select').selectedIndex === 0) {
       playersInfo.playerOne.value = 'Player';
     }
-    if (!playersInfo.playerTwo.value) {
-      playersInfo.playerTwo.value = 'Player';
-    }
     let tieCounter = 0;
-    for (let i = 0; i < gameBoard.gameBoard.length; i++) {
+    for (let i = 0; i < winCombo.length; i++) {
       const winnerAnimation = () => {
         document.getElementById(`${winCombo[i][0]}`).classList.add('blink');
         document.getElementById(`${winCombo[i][1]}`).classList.add('blink');
@@ -168,21 +163,62 @@ const score = () => {
   });
   return { game, x, winCombo };
 };
-const ai = () => {
-  if (document.querySelector('.players').selectedIndex === 0) {
-    const aiChoice = Math.round(Math.random() * 8);
-    if (gameBoard.playerTurn === 'o' && (!gameBoard.gameBoard[aiChoice])) {
-      gameBoard.gameBoard[aiChoice] = 'o';
-      gameBoard.playerTurn = 'x';
-      setTimeout(() => {
-        display();
-      }, 500);
-      score();
-    } else if (gameBoard.playerTurn === 'o') {
-      ai();
+
+function ai() {
+  function randNum() {
+    let anotherRandNum = Math.round(Math.random() * 8);
+    if (gameBoard.gameBoard[anotherRandNum]) {
+      anotherRandNum = Math.round(Math.random() * 8);
+      return randNum();
+    } return anotherRandNum;
+  }
+  function aiChoice() {
+    gameBoard.gameBoard[randNum()] = 'o';
+    gameBoard.playerTurn = 'x';
+    setTimeout(() => {
+      display();
+    }, 500);
+    score();
+  }
+  function aiChoiceHard() {
+    for (let i = 0; i < score().winCombo.length; i++) {
+      const choiceArr = score().winCombo[i].filter((ele) => score().x.includes(ele));
+      const notArr = score().winCombo[i].filter((ele) => !score().x.includes(ele));
+      if (choiceArr.length === 2 && !gameBoard.gameBoard[notArr]) {
+        gameBoard.gameBoard[notArr] = 'o';
+        gameBoard.playerTurn = 'x';
+        setTimeout(() => {
+          display();
+        }, 500);
+        score();
+        break;
+      } else if (i === (score().winCombo.length - 1)) {
+        aiChoice();
+      }
     }
   }
-};
+  if (document.querySelector('.players').selectedIndex === 0) {
+    const difficulty = document.querySelector('.difficulty');
+    if (difficulty.value === 'easy' && gameBoard.playerTurn === 'o') {
+      aiChoice();
+    }
+    if (difficulty.value === 'hard' && gameBoard.playerTurn === 'o') {
+      if (score().x.length < 2) {
+        aiChoice();
+      } else aiChoiceHard();
+    }
+    if (difficulty.value === 'impossible' && gameBoard.playerTurn === 'o') {
+      if (score().x.length < 2 && !document.getElementById('4').textContent) {
+        gameBoard.gameBoard[4] = 'o';
+        gameBoard.playerTurn = 'x';
+        setTimeout(() => {
+          display();
+        }, 500);
+        score();
+      } else aiChoiceHard();
+    }
+  }
+}
 const playerChoices = (() => {
   const container = document.querySelector('.container');
   container.addEventListener('click', (e) => {

@@ -9,7 +9,7 @@
 }
 
 body{
-  /* display: grid; */
+  display: grid;
   grid-template-rows: 1fr 3fr 1fr;
   position: fixed;
   height: 100%;
@@ -21,7 +21,7 @@ body{
   justify-self: center;
   align-self: center;
   gap: 15px;
-  font-size: clamp(10px, 1.5vw, 150px);
+  font-size: clamp(10px, 1.5vw, 25px);
 }
 
 .score{
@@ -96,7 +96,7 @@ body{
 select{
   border-radius: 20px;
   text-align: center;
-  padding: clamp(5px, 0.7vw, 100px);
+  padding: clamp(5px, 0.7vw, 10px);
   padding-right: 20px;
   font-size: clamp(10px, 1.5vw, 20px);
   appearance: none;
