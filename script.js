@@ -2,9 +2,9 @@
 const gameBoard = (() => {
   const gameBoard = [];
   const playerTurn = 'x';
-  let playerX = 0;
-  let playerO = 0;
-  let tie = 0;
+  const playerX = 0;
+  const playerO = 0;
+  const tie = 0;
   return {
     gameBoard,
     playerTurn,
@@ -37,7 +37,8 @@ const playersInfo = (() => {
     if (twoPlayers.value === 'players' && gameBoard.gameBoard.length === 0) {
       formModal.showModal();
       formModal.style.display = 'grid';
-    } else if (document.querySelector('select').selectedIndex === 0) {
+    }
+    if (document.querySelector('select').selectedIndex === 0) {
       ai();
     }
   });
@@ -70,7 +71,7 @@ const score = () => {
   const o = [];
   const winCombo = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6],
     [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6], ['na']];
-  const choiceCombo = (() => {
+  function choiceCombo() {
     for (let i = 0; i < gameBoard.gameBoard.length; i++) {
       if (gameBoard.gameBoard[i] === 'x') {
         x.push(i);
@@ -78,8 +79,7 @@ const score = () => {
         o.push(i);
       }
     }
-  })();
-  
+  } choiceCombo();
   const game = (() => {
     if (!playersInfo.playerOne.value && document.querySelector('select').selectedIndex === 0) {
       playersInfo.playerOne.value = 'Player';
@@ -102,11 +102,13 @@ const score = () => {
         gameBoard.playerTurn = 'x';
         scorePlayer.textContent = `${playersInfo.playerOne.value} (X) : ${gameBoard.playerX}`;
         winnerAnimation();
+        break;
       } else if (winCombo[i].every((ele) => o.includes(ele))) {
         gameBoard.playerO += 1;
         gameBoard.playerTurn = 'x';
         scoreAi.textContent = `${playersInfo.playerTwo.value} (O) : ${gameBoard.playerO}`;
         winnerAnimation();
+        break;
       } else if (gameBoard.gameBoard[i]) {
         tieCounter += 1;
         if (tieCounter === 9) {
@@ -114,6 +116,7 @@ const score = () => {
           tie.textContent = `Tie : ${gameBoard.tie}`;
           gameBoard.playerTurn = 'x';
           gameBoard.gameBoard = [];
+          break;
         }
       }
     }
@@ -123,7 +126,7 @@ const score = () => {
     return tieCounter;
   })();
 
-  const winner = (() => {
+  function winner() {
     if (gameBoard.playerX === 3 && (!document.querySelector('.modal').open)) {
       modalPlayers.textContent = `${playersInfo.playerOne.value} (X)`;
       modalPara.textContent = 'Won!';
@@ -142,7 +145,7 @@ const score = () => {
       modal.showModal();
       modal.style.display = 'flex';
     }
-  })();
+  } winner();
   reset.addEventListener('click', () => {
     document.querySelector('.modal').close();
     gameBoard.gameBoard = [];
@@ -165,6 +168,7 @@ const score = () => {
 };
 
 function ai() {
+  const difficulty = document.querySelector('.difficulty');
   function randNum() {
     let anotherRandNum = Math.round(Math.random() * 8);
     if (gameBoard.gameBoard[anotherRandNum]) {
@@ -172,7 +176,7 @@ function ai() {
       return randNum();
     } return anotherRandNum;
   }
-  function aiChoice() {
+  function aiChoiceRand() {
     gameBoard.gameBoard[randNum()] = 'o';
     gameBoard.playerTurn = 'x';
     setTimeout(() => {
@@ -182,10 +186,10 @@ function ai() {
   }
   function aiChoiceHard() {
     for (let i = 0; i < score().winCombo.length; i++) {
-      const choiceArr = score().winCombo[i].filter((ele) => score().x.includes(ele));
-      const notArr = score().winCombo[i].filter((ele) => !score().x.includes(ele));
-      if (choiceArr.length === 2 && !gameBoard.gameBoard[notArr]) {
-        gameBoard.gameBoard[notArr] = 'o';
+      const twoWinningNumComboArray = score().winCombo[i].filter((ele) => score().x.includes(ele));
+      const missingWinningNumArray = score().winCombo[i].filter((ele) => !score().x.includes(ele));
+      if (twoWinningNumComboArray.length === 2 && !gameBoard.gameBoard[missingWinningNumArray]) {
+        gameBoard.gameBoard[missingWinningNumArray] = 'o';
         gameBoard.playerTurn = 'x';
         setTimeout(() => {
           display();
@@ -193,18 +197,17 @@ function ai() {
         score();
         break;
       } else if (i === (score().winCombo.length - 1)) {
-        aiChoice();
+        aiChoiceRand();
       }
     }
   }
   if (document.querySelector('.players').selectedIndex === 0) {
-    const difficulty = document.querySelector('.difficulty');
     if (difficulty.value === 'easy' && gameBoard.playerTurn === 'o') {
-      aiChoice();
+      aiChoiceRand();
     }
     if (difficulty.value === 'hard' && gameBoard.playerTurn === 'o') {
       if (score().x.length < 2) {
-        aiChoice();
+        aiChoiceRand();
       } else aiChoiceHard();
     }
     if (difficulty.value === 'impossible' && gameBoard.playerTurn === 'o') {
@@ -219,7 +222,7 @@ function ai() {
     }
   }
 }
-const playerChoices = (() => {
+function playerChoices() {
   const container = document.querySelector('.container');
   container.addEventListener('click', (e) => {
     if (!gameBoard.gameBoard[e.target.id]) {
@@ -235,4 +238,4 @@ const playerChoices = (() => {
       ai();
     }
   });
-})();
+} playerChoices();
