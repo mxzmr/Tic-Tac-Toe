@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
 const gameBoard = (() => {
   const gameBoard = [];
-  const playerTurn = 'x';
+  const playerTurn = 'X';
   const playerX = 0;
   const playerO = 0;
   const tie = 0;
@@ -33,12 +33,15 @@ const playersInfo = (() => {
   const playerOne = document.getElementById('player-one');
   const playerTwo = document.getElementById('player-two');
   const twoPlayers = document.querySelector('.players');
+  const difficulty = document.querySelector('.difficulty');
   twoPlayers.addEventListener('change', () => {
     if (twoPlayers.value === 'players' && gameBoard.gameBoard.length === 0) {
       formModal.showModal();
       formModal.style.display = 'grid';
+      difficulty.style.display = 'none';
     }
     if (document.querySelector('select').selectedIndex === 0) {
+      difficulty.style.display = '';
       ai();
     }
   });
@@ -72,10 +75,10 @@ const score = () => {
   const winCombo = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6],
     [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6], ['na']];
   function choiceCombo() {
-    for (let i = 0; i < gameBoard.gameBoard.length; i++) {
-      if (gameBoard.gameBoard[i] === 'x') {
+    for (let i = 0; i < gameBoard.gameBoard.length; i += 1) {
+      if (gameBoard.gameBoard[i] === 'X') {
         x.push(i);
-      } else if (gameBoard.gameBoard[i] === 'o') {
+      } else if (gameBoard.gameBoard[i] === 'O') {
         o.push(i);
       }
     }
@@ -85,7 +88,7 @@ const score = () => {
       playersInfo.playerOne.value = 'Player';
     }
     let tieCounter = 0;
-    for (let i = 0; i < winCombo.length; i++) {
+    for (let i = 0; i < winCombo.length; i += 1) {
       const winnerAnimation = () => {
         document.getElementById(`${winCombo[i][0]}`).classList.add('blink');
         document.getElementById(`${winCombo[i][1]}`).classList.add('blink');
@@ -95,17 +98,17 @@ const score = () => {
           document.getElementById(`${winCombo[i][1]}`).classList.remove('blink');
           document.getElementById(`${winCombo[i][2]}`).classList.remove('blink');
           gameBoard.gameBoard = [];
-        }, 1000);
+        }, 1500);
       };
       if (winCombo[i].every((ele) => x.includes(ele))) {
         gameBoard.playerX += 1;
-        gameBoard.playerTurn = 'x';
+        gameBoard.playerTurn = 'X';
         scorePlayer.textContent = `${playersInfo.playerOne.value} (X) : ${gameBoard.playerX}`;
         winnerAnimation();
         break;
       } else if (winCombo[i].every((ele) => o.includes(ele))) {
         gameBoard.playerO += 1;
-        gameBoard.playerTurn = 'x';
+        gameBoard.playerTurn = 'X';
         scoreAi.textContent = `${playersInfo.playerTwo.value} (O) : ${gameBoard.playerO}`;
         winnerAnimation();
         break;
@@ -114,7 +117,7 @@ const score = () => {
         if (tieCounter === 9) {
           gameBoard.tie += 1;
           tie.textContent = `Tie : ${gameBoard.tie}`;
-          gameBoard.playerTurn = 'x';
+          gameBoard.playerTurn = 'X';
           gameBoard.gameBoard = [];
           break;
         }
@@ -122,7 +125,7 @@ const score = () => {
     }
     setTimeout(() => {
       display();
-    }, 1000);
+    }, 1500);
     return tieCounter;
   })();
 
@@ -140,7 +143,7 @@ const score = () => {
       modal.style.display = 'flex';
     }
     if (gameBoard.tie === 3 && (!document.querySelector('.modal').open)) {
-      modalPlayers.textContent = `${playersInfo.playerOne.value}${playersInfo.playerTwo.value}`;
+      modalPlayers.textContent = 'X O';
       modalPara.textContent = 'Tie!';
       modal.showModal();
       modal.style.display = 'flex';
@@ -149,7 +152,7 @@ const score = () => {
   reset.addEventListener('click', () => {
     document.querySelector('.modal').close();
     gameBoard.gameBoard = [];
-    gameBoard.playerTurn = 'x';
+    gameBoard.playerTurn = 'X';
     playersInfo.playerOne.value = '';
     playersInfo.playerTwo.value = '';
     modalPlayers.textContent = '';
@@ -164,7 +167,9 @@ const score = () => {
     gameBoard.tie = 0;
     display();
   });
-  return { game, x, winCombo };
+  return {
+    game, x, o, winCombo,
+  };
 };
 
 function ai() {
@@ -177,43 +182,67 @@ function ai() {
     } return anotherRandNum;
   }
   function aiChoiceRand() {
-    gameBoard.gameBoard[randNum()] = 'o';
-    gameBoard.playerTurn = 'x';
+    gameBoard.gameBoard[randNum()] = 'O';
+    gameBoard.playerTurn = 'X';
     setTimeout(() => {
       display();
     }, 500);
     score();
   }
   function aiChoiceHard() {
-    for (let i = 0; i < score().winCombo.length; i++) {
-      const twoWinningNumComboArray = score().winCombo[i].filter((ele) => score().x.includes(ele));
-      const missingWinningNumArray = score().winCombo[i].filter((ele) => !score().x.includes(ele));
-      if (twoWinningNumComboArray.length === 2 && !gameBoard.gameBoard[missingWinningNumArray]) {
-        gameBoard.gameBoard[missingWinningNumArray] = 'o';
-        gameBoard.playerTurn = 'x';
+    // loop that checks if there is a combination of 2 O's then add the last O for the win
+    for (let i = 0; i < score().winCombo.length; i += 1) {
+      const checkIfOWon = score().winCombo[i].filter((ele) => score().o.includes(ele));
+      const findMissingOFromCombo = score().winCombo[i].filter((ele) => !score().o.includes(ele));
+      if (checkIfOWon.length === 2 && !gameBoard.gameBoard[findMissingOFromCombo]) {
+        gameBoard.gameBoard[findMissingOFromCombo] = 'O';
+        gameBoard.playerTurn = 'X';
+        setTimeout(() => {
+          display();
+        }, 500);
+        score();
+        return;
+      }
+    }
+    // loop that checks combination of 2 X's and adds an O to block X from winning
+    for (let i = 0; i < score().winCombo.length; i += 1) {
+      const checkIfXWon = score().winCombo[i].filter((ele) => score().x.includes(ele));
+      const findMissingXFromCombo = score().winCombo[i].filter((ele) => !score().x.includes(ele));
+      if (checkIfXWon.length === 2 && !gameBoard.gameBoard[findMissingXFromCombo]) {
+        gameBoard.gameBoard[findMissingXFromCombo] = 'O';
+        gameBoard.playerTurn = 'X';
         setTimeout(() => {
           display();
         }, 500);
         score();
         break;
+        // if there is a single X then run aiChoiceRand()
       } else if (i === (score().winCombo.length - 1)) {
         aiChoiceRand();
       }
     }
   }
-  if (document.querySelector('.players').selectedIndex === 0) {
-    if (difficulty.value === 'easy' && gameBoard.playerTurn === 'o') {
+  if (document.querySelector('.players').selectedIndex === 0 && gameBoard.playerTurn === 'O') {
+    if (difficulty.value === 'easy') {
       aiChoiceRand();
     }
-    if (difficulty.value === 'hard' && gameBoard.playerTurn === 'o') {
+    if (difficulty.value === 'hard') {
       if (score().x.length < 2) {
         aiChoiceRand();
       } else aiChoiceHard();
     }
-    if (difficulty.value === 'impossible' && gameBoard.playerTurn === 'o') {
-      if (score().x.length < 2 && !document.getElementById('4').textContent) {
-        gameBoard.gameBoard[4] = 'o';
-        gameBoard.playerTurn = 'x';
+    if (difficulty.value === 'impossible') {
+      if (score().x.length < 2) {
+        /**
+         * The first ai choice from the available board cells
+         * position number 4 gives 4 winning combinations positions 0,2,6,8 gives 3 combinations
+         * the rest of the ai choices will depend on the player choice and ai winning combinations
+        */
+        const positions = [0, 2, 6, 8];
+        const randPosition = positions[Math.floor(Math.random() * positions.length)];
+        if (!document.getElementById('4').textContent) gameBoard.gameBoard[4] = 'O';
+        else gameBoard.gameBoard[randPosition] = 'O';
+        gameBoard.playerTurn = 'X';
         setTimeout(() => {
           display();
         }, 500);
@@ -226,12 +255,12 @@ function playerChoices() {
   const container = document.querySelector('.container');
   container.addEventListener('click', (e) => {
     if (!gameBoard.gameBoard[e.target.id]) {
-      if (gameBoard.playerTurn === 'x') {
-        gameBoard.gameBoard[e.target.id] = 'x';
-        gameBoard.playerTurn = 'o';
+      if (gameBoard.playerTurn === 'X') {
+        gameBoard.gameBoard[e.target.id] = 'X';
+        gameBoard.playerTurn = 'O';
       } else {
-        gameBoard.gameBoard[e.target.id] = 'o';
-        gameBoard.playerTurn = 'x';
+        gameBoard.gameBoard[e.target.id] = 'O';
+        gameBoard.playerTurn = 'X';
       }
       display();
       score();
